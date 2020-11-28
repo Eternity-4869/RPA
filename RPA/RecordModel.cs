@@ -25,8 +25,7 @@ namespace RPA
             Process process = Process.Start(start);
 
             return "";
-
-            /* cause bug in UIAControl code
+            /*
             String result = process.StandardError.ReadToEnd();
             if (result == null || result == "")
             {
@@ -111,7 +110,7 @@ namespace RPA
                 record.Year + "-" + record.Month + "-" + record.Day + "-" +
                 record.Hour + "-" + record.Minute + "-" + record.Second + "-" +
                 record.MilliSecond;
-            RunPythonFunc("./", "uialog", "uia_info", "'" + UIAControlDir + "', '" + fileNamePrefix + "'");
+            RunPythonFunc(UIAControlDir, "uialog", "uia_info", "'" + UIAControlDir + "', '" + fileNamePrefix + "'");
 
             Records.Add(record);
 
