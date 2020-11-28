@@ -1,6 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace RPA
@@ -28,44 +29,11 @@ namespace RPA
             MHook = new MouseHook(this);
         }
 
-        /*
-        // Web组的代码相关
-        private HttpListener MyHttpListener;
-
-        // 处理Web组的Chrome扩展程序发送的消息
-        private void HandleWebMessage(IAsyncResult result)
-        {
-            if (MyHttpListener.IsListening)
-            {
-                HttpListenerContext context = MyHttpListener.EndGetContext(result);
-                HttpListenerRequest request = context.Request;
-
-                String postData;
-                using (StreamReader reader =
-                    new StreamReader(request.InputStream, request.ContentEncoding))
-                {
-                    postData = reader.ReadToEnd();
-                    MessageBox.Show(postData);
-                }
-
-                MyHttpListener.BeginGetContext
-                    (new AsyncCallback(HandleWebMessage), null);
-            }
-        }
-        */
-
         public void StartRecording()
         {
             StartHook();
             ClipboardMonitor.OnClipboardChange += ClipboardMonitor_OnClipboardChange;
             ClipboardMonitor.Start();
-
-            /*
-            MyHttpListener = new HttpListener();
-            MyHttpListener.Prefixes.Add("http://localhost:60411/");
-            MyHttpListener.Start();
-            MyHttpListener.BeginGetContext(new AsyncCallback(HandleWebMessage), null);
-            */
         }
 
         private void ClipboardMonitor_OnClipboardChange(ClipboardFormat format, object data)
@@ -84,14 +52,6 @@ namespace RPA
         {
             StopHook();
             ClipboardMonitor.Stop();
-
-            /*
-            if (MyHttpListener != null && MyHttpListener.IsListening)
-            {
-                MyHttpListener.Stop();
-                MyHttpListener.Close();
-            }
-            */
         }
 
         ~Recorder()
@@ -129,7 +89,7 @@ namespace RPA
                 return true;
             }
         }
-        
+
         internal void UpdateRecordCounter()
         {
             if (MyRecordForm != null && !MyRecordForm.IsDisposed)
@@ -144,7 +104,7 @@ namespace RPA
                 }
                 catch (ObjectDisposedException)
                 {
-                    
+
                 }
             }
         }

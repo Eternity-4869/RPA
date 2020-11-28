@@ -14,7 +14,6 @@ namespace RPA
 
         private String RunCmd(string program, string cmd)
         {
-            Console.WriteLine(cmd);
             ProcessStartInfo start = new ProcessStartInfo();
             start.FileName = program;
             start.Arguments = cmd;
