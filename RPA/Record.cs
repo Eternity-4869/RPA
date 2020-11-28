@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace RPA
 {
@@ -10,6 +11,13 @@ namespace RPA
     {
         public String ComputerId { get; set; }
         public String Timestamp { get; set; }
+        public String Year { get; set; } // no need to save
+        public String Month { get; set; } // no need to save
+        public String Day { get; set; } // no need to save
+        public String Hour { get; set; } // no need to save
+        public String Minute { get; set; } // no need to save
+        public String Second { get; set; } // no need to save
+        public String MilliSecond { get; set; } // no need to save
         public int HourSpan { get; set; }
         public String Event { get; set; }
         public Point UIAPoint { get; set; }
@@ -52,6 +60,15 @@ namespace RPA
             DateTime now = DateTime.Now;
             record.Timestamp = now.ToString("yyyy-MM-dd HH:mm:ss fff");
             record.HourSpan = TimeZoneInfo.Local.BaseUtcOffset.Hours;
+
+            Regex regex = new Regex(@"(\d*)-(\d*)-(\d*) (\d*):(\d*):(\d*) (\d*)");
+            record.Year = regex.Match(record.Timestamp).Groups[1].ToString();
+            record.Month = regex.Match(record.Timestamp).Groups[2].ToString();
+            record.Day = regex.Match(record.Timestamp).Groups[3].ToString();
+            record.Hour = regex.Match(record.Timestamp).Groups[4].ToString();
+            record.Minute = regex.Match(record.Timestamp).Groups[5].ToString();
+            record.Second = regex.Match(record.Timestamp).Groups[6].ToString();
+            record.MilliSecond = regex.Match(record.Timestamp).Groups[7].ToString();
 
             return record;
         }

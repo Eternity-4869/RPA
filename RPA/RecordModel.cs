@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
@@ -7,7 +8,40 @@ namespace RPA
 {
     internal class RecordModel
     {
-        List<Record> Records;
+        private List<Record> Records;
+        private const String PatternDir = "./Pattern/";
+        private const String UIAControlDir = "./UIAControl/";
+
+        private String RunCmd(string program, string cmd)
+        {
+            Console.WriteLine(cmd);
+            ProcessStartInfo start = new ProcessStartInfo();
+            start.FileName = program;
+            start.Arguments = cmd;
+            start.UseShellExecute = false;
+            start.CreateNoWindow = true;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+            Process process = Process.Start(start);
+
+            return "";
+
+            /* cause bug in UIAControl code
+            String result = process.StandardError.ReadToEnd();
+            if (result == null || result == "")
+            {
+                result = process.StandardOutput.ReadToEnd();
+            }
+            return result;
+            */
+        }
+
+        private String RunPythonFunc(string path, string filename, string functionname, string parameter)
+        {
+            String cmd = String.Format("-c \"import sys;sys.path.append('{0}');import {1};print({1}.{2}({3}));\"",
+                path, filename, functionname, parameter);
+            return RunCmd("python", cmd);
+        }
 
         public RecordModel()
         {
@@ -72,6 +106,13 @@ namespace RPA
             record.Event = "MouseClick";
             record.UIAButtonClicked = button;
             record.UIAClickType = type;
+
+            String fileNamePrefix =
+                record.Year + "-" + record.Month + "-" + record.Day + "-" +
+                record.Hour + "-" + record.Minute + "-" + record.Second + "-" +
+                record.MilliSecond;
+            RunPythonFunc("./", "uialog", "uia_info", "'" + UIAControlDir + "', '" + fileNamePrefix + "'");
+
             Records.Add(record);
 
             return true;
@@ -324,7 +365,7 @@ namespace RPA
             {
                 if (input[i] == '\"')
                 {
-                    output += "\\\"";
+                    output += "\"\"";
                 }
                 else if (input[i] == '\r')
                 {

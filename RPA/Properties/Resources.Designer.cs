@@ -61,6 +61,42 @@ namespace RPA.Properties {
         }
         
         /// <summary>
+        ///   查找类似 打开图像识别组件失败 的本地化字符串。
+        /// </summary>
+        internal static string FAIL_TO_OPEN_PATTERN_FILE_TEXT {
+            get {
+                return ResourceManager.GetString("FAIL_TO_OPEN_PATTERN_FILE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 失败 的本地化字符串。
+        /// </summary>
+        internal static string FAIL_TO_OPEN_PATTERN_FILE_TITLE {
+            get {
+                return ResourceManager.GetString("FAIL_TO_OPEN_PATTERN_FILE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开UIA组件失败 的本地化字符串。
+        /// </summary>
+        internal static string FAIL_TO_OPEN_UIACONTROL_FILE_TEXT {
+            get {
+                return ResourceManager.GetString("FAIL_TO_OPEN_UIACONTROL_FILE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 失败 的本地化字符串。
+        /// </summary>
+        internal static string FAIL_TO_OPEN_UIACONTROL_FILE_TITLE {
+            get {
+                return ResourceManager.GetString("FAIL_TO_OPEN_UIACONTROL_FILE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 保存日志失败，是否重试？ 的本地化字符串。
         /// </summary>
         internal static string FAIL_TO_SAVE_TEXT {

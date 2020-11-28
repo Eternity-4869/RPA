@@ -12,7 +12,16 @@ namespace RPA
 
         private void recordButton_Click(object sender, EventArgs e)
         {
-            new RecordForm(this).Show();
+            RecordForm rf;
+            try
+            {
+                rf = new RecordForm(this);
+                rf.Show();
+            }
+            catch (Exception)
+            {
+                return;
+            }
             this.Hide();
         }
 

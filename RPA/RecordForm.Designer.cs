@@ -96,7 +96,6 @@
             this.MaximizeBox = false;
             this.Name = "RecordForm";
             this.Text = "录制";
-            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RecordForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();

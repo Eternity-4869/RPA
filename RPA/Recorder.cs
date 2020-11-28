@@ -2,8 +2,6 @@
 using System.IO;
 using System.Net;
 using System.Windows.Forms;
-using IronPython.Hosting;
-using Microsoft.Scripting.Hosting;
 
 namespace RPA
 {
@@ -17,36 +15,9 @@ namespace RPA
 
         internal RecordModel MyRecordModel;
 
-        /*
-        // 图像组的代码相关
-        const String PATTERN_FILE = "Pattern\\jietu.py";
-        private ScriptRuntime PatternRuntime;
-        private dynamic PatternCode;
-        private void InitPatternCode()
-        {
-            PatternRuntime = Python.CreateRuntime();
-            try
-            {
-                PatternCode = PatternRuntime.UseFile(PATTERN_FILE);
-            }
-            catch (Exception)
-            {
-                // fail to open python file, exit
-                MessageBox.Show(
-                        Properties.Resources.FAIL_TO_OPEN_PATTERN_FILE_TEXT,
-                        Properties.Resources.FAIL_TO_OPEN_PATTERN_FILE_TITLE,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                Environment.Exit(-1);
-            }
-        }
-        */
-
         public Recorder(RecordForm rf)
         {
             MyRecordForm = rf;
-
-            // InitPatternCode();
         }
 
         public void InitRecorder()
@@ -101,6 +72,8 @@ namespace RPA
         {
             if (format == ClipboardFormat.Text)
             {
+                if (MyRecordModel == null)
+                    return;
                 MyRecordModel.AddCopyRecord((String)data);
             }
 

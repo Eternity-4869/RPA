@@ -104,38 +104,46 @@ namespace RPA
                 {
                     case WM_LBUTTONDOWN:
                         button = MouseButtons.Left;
-                        MyRecorder.MyRecordModel.AddMouseClickedRecord("Left", "Down");
+                        if (MyRecorder.MyRecordModel != null)
+                            MyRecorder.MyRecordModel.AddMouseClickedRecord("Left", "Down");
                         break;
                     case WM_LBUTTONUP:
                         button = MouseButtons.Left;
-                        MyRecorder.MyRecordModel.AddMouseClickedRecord("Left", "Up");
+                        if (MyRecorder.MyRecordModel != null)
+                            MyRecorder.MyRecordModel.AddMouseClickedRecord("Left", "Up");
                         break;
                     case WM_RBUTTONDOWN:
                         button = MouseButtons.Right;
-                        MyRecorder.MyRecordModel.AddMouseClickedRecord("Right", "Down");
+                        if (MyRecorder.MyRecordModel != null)
+                            MyRecorder.MyRecordModel.AddMouseClickedRecord("Right", "Down");
                         break;
                     case WM_RBUTTONUP:
                         button = MouseButtons.Right;
-                        MyRecorder.MyRecordModel.AddMouseClickedRecord("Right", "Up");
+                        if (MyRecorder.MyRecordModel != null)
+                            MyRecorder.MyRecordModel.AddMouseClickedRecord("Right", "Up");
                         break;
                     case WM_MBUTTONDOWN:
                         button = MouseButtons.Middle;
-                        MyRecorder.MyRecordModel.AddMouseClickedRecord("Middle", "Down");
+                        if (MyRecorder.MyRecordModel != null)
+                            MyRecorder.MyRecordModel.AddMouseClickedRecord("Middle", "Down");
                         break;
                     case WM_MBUTTONUP:
                         button = MouseButtons.Middle;
-                        MyRecorder.MyRecordModel.AddMouseClickedRecord("Middle", "Up");
+                        if (MyRecorder.MyRecordModel != null)
+                            MyRecorder.MyRecordModel.AddMouseClickedRecord("Middle", "Up");
                         break;
                     /* no need
                     case WM_MOUSEMOVE:
                         button = MouseButtons.None;
-                        MyRecorder.MyRecordModel.AddMouseMovedRecord()
+                        if (MyRecorder.MyRecordModel != null)
+                            MyRecorder.MyRecordModel.AddMouseMovedRecord()
                         break;
                     */
                     case WM_MOUSEWHEEL:
                         button = MouseButtons.None;
                         wheelDegree = (short)((MyMouseHookStruct.hWnd >> 16) & 0xffff);
-                        MyRecorder.MyRecordModel.AddMouseWheelRecord(wheelDegree);
+                        if (MyRecorder.MyRecordModel != null)
+                            MyRecorder.MyRecordModel.AddMouseWheelRecord(wheelDegree);
                         break;
                     default:
                         return CallNextHookEx(HMouseHook, nCode, wParam, lParam);
