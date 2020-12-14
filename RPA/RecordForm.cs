@@ -52,7 +52,7 @@ namespace RPA
             pauseButton.Visible = false;
             startButton.Visible = true;
 
-            MyRecorder.StopRecording();
+            MyRecorder.PauseRecording();
         }
 
         private void stopButton_Click(object sender, EventArgs e)
@@ -69,7 +69,6 @@ namespace RPA
                     Properties.Resources.SUCCEED_TO_RECORD_TITLE,
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
-
             if (result == DialogResult.Yes)
             {
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)

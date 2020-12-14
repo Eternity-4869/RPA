@@ -3,16 +3,31 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace RPA
 {
     internal class RecordModel
     {
         private List<Record> Records;
-        private const String PatternDir = "./Pattern/";
+        private const String PatternDir = "./piccapture/";
         private const String UIAControlDir = "./UIAControl/";
+        private const String UIAControlDataDir = UIAControlDir + "data/";
 
-        private String RunCmd(string program, string cmd)
+        private void RunCmd(string program, string cmd)
+        {
+            ProcessStartInfo start = new ProcessStartInfo();
+            start.FileName = program;
+            start.Arguments = cmd;
+            start.UseShellExecute = false;
+            start.CreateNoWindow = true;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+            Process process = Process.Start(start);
+        }
+
+        private String RunCmdAndReturnString(string program, string cmd)
         {
             ProcessStartInfo start = new ProcessStartInfo();
             start.FileName = program;
@@ -23,22 +38,26 @@ namespace RPA
             start.RedirectStandardError = true;
             Process process = Process.Start(start);
 
-            return "";
-            /*
             String result = process.StandardError.ReadToEnd();
             if (result == null || result == "")
             {
                 result = process.StandardOutput.ReadToEnd();
             }
             return result;
-            */
         }
 
-        private String RunPythonFunc(string path, string filename, string functionname, string parameter)
+        private void RunPythonFunc(string path, string filename, string functionname, string parameter)
         {
             String cmd = String.Format("-c \"import sys;sys.path.append('{0}');import {1};print({1}.{2}({3}));\"",
                 path, filename, functionname, parameter);
-            return RunCmd("python", cmd);
+            RunCmd("python", cmd);
+        }
+
+        private String RunPythonFuncAndReturnString(string path, string filename, string functionname, string parameter)
+        {
+            String cmd = String.Format("-c \"import sys;sys.path.append('{0}');import {1};print({1}.{2}({3}));\"",
+                path, filename, functionname, parameter);
+            return RunCmdAndReturnString("python", cmd);
         }
 
         public RecordModel()
@@ -105,12 +124,11 @@ namespace RPA
             record.UIAButtonClicked = button;
             record.UIAClickType = type;
 
-            String fileNamePrefix =
-                record.Year + "-" + record.Month + "-" + record.Day + "-" +
-                record.Hour + "-" + record.Minute + "-" + record.Second + "-" +
-                record.MilliSecond;
-            RunPythonFunc(UIAControlDir, "uialog", "uia_info", "'" + UIAControlDir + "', '" + fileNamePrefix + "'");
-
+            RunPythonFunc(
+                UIAControlDir,
+                "uialog",
+                "uia_info",
+                "'" + UIAControlDataDir + "', '" + record.Timestamp + "'");
             Records.Add(record);
 
             return true;
@@ -174,7 +192,8 @@ namespace RPA
                 ",UIAClickType" +
                 ",UIAWheelDegree" +
                 ",UIAClipboard" +
-                ",UIAFileName";
+                ",UIAFileName" +
+                ",UIAControlInfo";
         }
 
         private String RecordToCSV(Record r)
@@ -221,6 +240,9 @@ namespace RPA
             str += ",";
 
             str += UIAFileNameToString(r);
+            str += ",";
+
+            str += UIAControlInfo(r);
 
             return str;
         }
@@ -356,6 +378,18 @@ namespace RPA
             }
         }
 
+        private String UIAControlInfo(Record r)
+        {
+            if (r.UIAControlInfo != "")
+            {
+                return "\"" + Modify(r.UIAControlInfo) + "\"";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         private static string Modify(String input)
         {
             String output = "";
@@ -383,6 +417,48 @@ namespace RPA
                 }
             }
             return output;
+        }
+
+        internal bool ReadUIAControlInfoFromFile()
+        {
+            DirectoryInfo root = new DirectoryInfo(UIAControlDataDir);
+
+            Regex regex = new Regex(@"(.*)-Info.xml");
+
+            foreach (FileInfo f in root.GetFiles())
+            {
+                if (regex.IsMatch(f.Name))
+                {
+                    String timestamp = regex.Match(f.Name).Groups[1].ToString();
+
+                    foreach (Record r in Records)
+                    {
+                        if (r.Timestamp.Equals(timestamp))
+                        {
+                            StreamReader sr = null;
+                            try
+                            {
+                                sr = new StreamReader(f.FullName, Encoding.Default);
+                            }
+                            catch (IOException)
+                            {
+                                return false;
+                            }
+                            r.UIAControlInfo = sr.ReadToEnd();
+
+                            Console.WriteLine(r.UIAControlInfo);
+
+                            sr.Close();
+
+                            f.Delete();
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

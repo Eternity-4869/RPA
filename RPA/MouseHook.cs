@@ -132,18 +132,20 @@ namespace RPA
                         if (MyRecorder.MyRecordModel != null)
                             MyRecorder.MyRecordModel.AddMouseClickedRecord("Middle", "Up");
                         break;
-                    /* no need
                     case WM_MOUSEMOVE:
                         button = MouseButtons.None;
+                        /* no need
                         if (MyRecorder.MyRecordModel != null)
                             MyRecorder.MyRecordModel.AddMouseMovedRecord()
+                        */
                         break;
-                    */
                     case WM_MOUSEWHEEL:
                         button = MouseButtons.None;
                         wheelDegree = (short)((MyMouseHookStruct.hWnd >> 16) & 0xffff);
+                        /*
                         if (MyRecorder.MyRecordModel != null)
                             MyRecorder.MyRecordModel.AddMouseWheelRecord(wheelDegree);
+                        */
                         break;
                     default:
                         return CallNextHookEx(HMouseHook, nCode, wParam, lParam);

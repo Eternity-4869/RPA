@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Fleck;
+using Newtonsoft.Json;
+using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace RPA
@@ -12,6 +15,8 @@ namespace RPA
         private MouseHook MHook;
 
         internal RecordModel MyRecordModel;
+
+        private WebSocketServer MyWebSocketServer;
 
         public Recorder(RecordForm rf)
         {
@@ -31,6 +36,22 @@ namespace RPA
             StartHook();
             ClipboardMonitor.OnClipboardChange += ClipboardMonitor_OnClipboardChange;
             ClipboardMonitor.Start();
+
+            MyWebSocketServer = new WebSocketServer("ws://127.0.0.1:40411");
+            MyWebSocketServer.Start(socket =>
+            {
+                socket.OnOpen = () =>
+                {
+                    Console.WriteLine("Open!");
+                    socket.Send("hello");
+                };
+
+                socket.OnClose = () => Console.WriteLine("Close!");
+                socket.OnMessage = message =>
+                {
+                    socket.Send("Bingo");
+                };
+            });
         }
 
         private void ClipboardMonitor_OnClipboardChange(ClipboardFormat format, object data)
@@ -45,10 +66,16 @@ namespace RPA
             UpdateRecordCounter();
         }
 
-        public void StopRecording()
+        public void PauseRecording()
         {
             StopHook();
             ClipboardMonitor.Stop();
+            MyRecordModel.ReadUIAControlInfoFromFile();
+        }
+
+        public void StopRecording()
+        {
+            PauseRecording();
         }
 
         ~Recorder()
@@ -58,6 +85,8 @@ namespace RPA
 
         public bool SaveToDisk(String fileName)
         {
+            MyRecordModel.ReadUIAControlInfoFromFile();
+
             DialogResult result = DialogResult.Yes;
             while (result == DialogResult.Yes)
             {
