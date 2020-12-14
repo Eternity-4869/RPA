@@ -1,7 +1,5 @@
 ﻿using Fleck;
-using Newtonsoft.Json;
 using System;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace RPA
@@ -76,11 +74,6 @@ namespace RPA
         public void StopRecording()
         {
             PauseRecording();
-        }
-
-        ~Recorder()
-        {
-            StopRecording();
         }
 
         public bool SaveToDisk(String fileName)

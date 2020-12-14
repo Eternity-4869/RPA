@@ -30,6 +30,7 @@ namespace RPA
 
         private void RecordForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            MyRecorder.StopRecording();
             ReturnForm.Visible = true;
         }
 

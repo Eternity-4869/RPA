@@ -14,9 +14,8 @@ namespace RPA
         private const String UIAControlDir = "./UIAControl/";
         private const String UIAControlDataDir = UIAControlDir + "data/";
         private const String ScreenshotDir = "./Screenshot/";
-        private const String ScreenshotWindowCaptureDir = ScreenshotDir + "windowcapture";
         private const String ScreenshotCaptureDir = ScreenshotDir + "capture";
-        private const String ScreenshotClickCaptureDir = ScreenshotDir + "clickcapture";
+        private const String ScreenshotWindowCaptureDir = ScreenshotDir + "windowcapture";
 
         private void RunCmd(string program, string cmd)
         {
@@ -128,28 +127,49 @@ namespace RPA
             record.UIAButtonClicked = button;
             record.UIAClickType = type;
 
-            RunPythonFunc(
+            // time-consuming
+            ThreadStart ts = new ThreadStart(() =>
+            {
+                RunPythonFunc(
                 UIAControlDir,
                 "uialog",
                 "uia_info",
                 "'" + UIAControlDataDir + "', '" + record.Timestamp + "'");
 
-            RunPythonFunc(
-                ScreenshotDir,
-                "jietu",
-                "window_capture",
-                "'" + ScreenshotWindowCaptureDir + "','" + record.Timestamp + "'");
+                RunPythonFunc(
+                    ScreenshotDir,
+                    "jietu",
+                    "capture",
+                    "'" + ScreenshotCaptureDir + "','" + record.Timestamp + "'");
 
-            RunPythonFunc(
-                ScreenshotDir,
-                "jietu",
-                "capture",
-                "'" + ScreenshotCaptureDir + "','"
-                    + record.Timestamp + "',"
-                    + record.UIAWindowRect.Left + ","
-                    + record.UIAWindowRect.Top + ","
-                    + record.UIAWindowRect.Right + ","
-                    + record.UIAWindowRect.Bottom);
+                // which Rect should be used? Wait for testing
+
+                RunPythonFuncAndReturnString(
+                    ScreenshotDir,
+                    "jietu",
+                    "window_capture",
+                    "'" + ScreenshotWindowCaptureDir + "','"
+                        + record.Timestamp + "',"
+                        + record.UIAWindowRect.Left + ","
+                        + record.UIAWindowRect.Top + ","
+                        + record.UIAWindowRect.Right + ","
+                        + record.UIAWindowRect.Bottom);
+
+                /*
+                RunPythonFuncAndReturnString(
+                    ScreenshotDir,
+                    "jietu",
+                    "window_capture",
+                    "'" + ScreenshotWindowCaptureDir + "','"
+                        + record.Timestamp + "',"
+                        + record.UIAClientRect.Left + ","
+                        + record.UIAClientRect.Top + ","
+                        + record.UIAClientRect.Right + ","
+                        + record.UIAClientRect.Bottom);
+                */
+            });
+            Thread t = new Thread(ts);
+            t.Start();
 
             Records.Add(record);
 
@@ -467,8 +487,6 @@ namespace RPA
                                 return false;
                             }
                             r.UIAControlInfo = sr.ReadToEnd();
-
-                            Console.WriteLine(r.UIAControlInfo);
 
                             sr.Close();
 
