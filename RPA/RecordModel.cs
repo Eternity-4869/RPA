@@ -11,9 +11,12 @@ namespace RPA
     internal class RecordModel
     {
         private List<Record> Records;
-        private const String PatternDir = "./piccapture/";
         private const String UIAControlDir = "./UIAControl/";
         private const String UIAControlDataDir = UIAControlDir + "data/";
+        private const String ScreenshotDir = "./Screenshot/";
+        private const String ScreenshotWindowCaptureDir = ScreenshotDir + "windowcapture";
+        private const String ScreenshotCaptureDir = ScreenshotDir + "capture";
+        private const String ScreenshotClickCaptureDir = ScreenshotDir + "clickcapture";
 
         private void RunCmd(string program, string cmd)
         {
@@ -57,6 +60,7 @@ namespace RPA
         {
             String cmd = String.Format("-c \"import sys;sys.path.append('{0}');import {1};print({1}.{2}({3}));\"",
                 path, filename, functionname, parameter);
+            Console.WriteLine("python " + cmd);
             return RunCmdAndReturnString("python", cmd);
         }
 
@@ -129,6 +133,24 @@ namespace RPA
                 "uialog",
                 "uia_info",
                 "'" + UIAControlDataDir + "', '" + record.Timestamp + "'");
+
+            RunPythonFunc(
+                ScreenshotDir,
+                "jietu",
+                "window_capture",
+                "'" + ScreenshotWindowCaptureDir + "','" + record.Timestamp + "'");
+
+            RunPythonFunc(
+                ScreenshotDir,
+                "jietu",
+                "capture",
+                "'" + ScreenshotCaptureDir + "','"
+                    + record.Timestamp + "',"
+                    + record.UIAWindowRect.Left + ","
+                    + record.UIAWindowRect.Top + ","
+                    + record.UIAWindowRect.Right + ","
+                    + record.UIAWindowRect.Bottom);
+
             Records.Add(record);
 
             return true;
